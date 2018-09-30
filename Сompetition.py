@@ -2,6 +2,7 @@
 
 class CAR:
 	"""Автомобиль участвующий в гонке"""
+	
 	_car_specs = {
 		'ferrary': {"max_speed": 340, "drag_coef": 0.324, "time_to_max": 26},
 		'bugatti': {"max_speed": 407, "drag_coef": 0.39, "time_to_max": 32},
@@ -15,43 +16,55 @@ class CAR:
 		self._max_speed = self._car_specs[name]['max_speed']
 		self._drag_coef = self._car_specs[name]['drag_coef']
 		self._time_to_max = self._car_specs[name]['time_to_max']/3600
+		self._acceleration = self._max_speed / self._time_to_max # ускорение = (v- v0)/t
+		self._weather = WEATHER()
 
-	def get_speed(self, competitor_time, wind_speed):
+	def get_time(self, competitor_time):
 		if competitor_time == 0:
-			speed = 1
+			time = (2/self._acceleration)**0.5 # исходя из формулы пути тела: S = (a*t^2)/2
 		else:
 			speed = (competitor_time / self._time_to_max) * self._max_speed
 			speed = self._max_speed if speed >= self._max_speed else speed
-			if speed > wind_speed:
-				speed -= (self._drag_coef * wind_speed)
-		return(speed)
+			speed = self._weather.correction_spead(speed, self._drag_coef)
+			time = float(1) / speed
+		return(time)
 
 
 class WEATHER:
 	"""Погода во время гонки"""
 
-	def __init__(self, wind_speed = 20):
-		self._wind_speed = wind_speed
+	_instance = None
+	def __new__(cls, wind_speed = 20):
+		if cls._instance == None: # возможно наличие только 1 экземпляра класса
+			cls._wind_speed = wind_speed
+			cls._instance = super().__new__(cls)
+		return(cls._instance)
 
-	def get_wind_speed(self):
+	def correction_spead(self, speed, drag_coef):
+		wind_speed = self._get_wind_speed()
+		if speed > wind_speed:
+			speed -= (drag_coef * wind_speed)
+		return(speed)
+
+	def _get_wind_speed(self):
 		from random import randint
 		wind_speed = randint(0, self._wind_speed)
 		return(wind_speed)
 
 
 class COMPETITION:
-	"""Гонка - cинглетный класс"""
+	"""Гонка"""
 
 	_instance = None
-	def __new__(self, distance):
-		if self._instance == None:
-			# Возможно наличие только 1 экземпляра класса
-			self._instance = self
-			competitors = self._get_competitors(self)
-			weather = WEATHER()
-			self._start(self, distance, competitors, weather)
-		self._print_result(self)
-		return(self._instance)
+	def __new__(cls, distance):
+		if cls._instance == None: # возможно наличие только 1 экземпляра класса
+			competitors = cls._get_competitors(cls)
+			cls._start(cls, distance, competitors)
+			cls._instance = super().__new__(cls)
+		return(cls._instance)
+
+	def __init__(self, distance):
+		self._print_result()
 
 	def _get_competitors(self):
 		competitors = [CAR('ferrary')]
@@ -61,14 +74,13 @@ class COMPETITION:
 		competitors.append(CAR('sx4'))
 		return(competitors)
 
-	def _start(self, distance, competitors, weather):
+	def _start(self, distance, competitors):
 		self._result = []
 		for competitor in competitors:
 			competitor_time = 0
 			for step in range(distance):
-				wind_speed = weather.get_wind_speed()
-				speed = competitor.get_speed(competitor_time, wind_speed)
-				competitor_time += float(1) / speed
+				time = competitor.get_time(competitor_time)
+				competitor_time += time
 			self._result.append({'competitor_name': competitor.name, 'competitor_time': competitor_time})
 
 	def _print_result(self):
@@ -77,4 +89,3 @@ class COMPETITION:
 
 
 start = COMPETITION(10000)
-

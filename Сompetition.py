@@ -41,12 +41,12 @@ class WEATHER:
 		return(cls._instance)
 
 	def correction_spead(self, speed, drag_coef):
-		wind_speed = self.get_wind_speed()
+		wind_speed = self._get_wind_speed()
 		if speed > wind_speed:
 			speed -= (drag_coef * wind_speed)
 		return(speed)
 
-	def get_wind_speed(self):
+	def _get_wind_speed(self):
 		from random import randint
 		wind_speed = randint(0, self._wind_speed)
 		return(wind_speed)

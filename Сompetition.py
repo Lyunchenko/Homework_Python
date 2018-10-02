@@ -34,7 +34,7 @@ class WEATHER:
 	"""Погода во время гонки"""
 
 	_instance = None
-	def __new__(cls, wind_speed = 20):
+	def __new__(cls, wind_speed = 10):
 		if cls._instance == None: # возможно наличие только 1 экземпляра класса
 			cls._wind_speed = wind_speed
 			cls._instance = super().__new__(cls)
@@ -58,6 +58,7 @@ class COMPETITION:
 	_instance = None
 	def __new__(cls, distance):
 		if cls._instance == None: # возможно наличие только 1 экземпляра класса
+			WEATHER(20)
 			competitors = cls._get_competitors(cls)
 			cls._start(cls, distance, competitors)
 			cls._instance = super().__new__(cls)

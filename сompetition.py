@@ -1,5 +1,7 @@
 import car
 import weather
+import notification
+
 
 class Competition:
 	"""Гонка"""
@@ -16,6 +18,7 @@ class Competition:
 		self._distance = distance
 		self._competitors = []
 		self._weather = weather.BaseWeather()
+		self._notification_manager = notification.NotificationManager()
 		
 	def set_weather(self, wind_speed=None, ice = None):
 		if not wind_speed is None:
@@ -47,25 +50,24 @@ class Competition:
 	def _get_cars(self):
 		competitors=[]
 		for competitor in self._competitors:
-			competitors.append(car.Car(competitor))
+			this_car = car.Car(competitor)
+			competitors.append(this_car)
+			self._notification_manager.subscribe(this_car)
 		return(competitors)
 
 	def _get_result(self, distance, competitors):
-		result = [] if len(competitors)>0 else False
+		result = {} if len(competitors)>0 else False
 		for competitor in competitors:
 			competitor_time = 0
 			for step in range(distance):
 				time = competitor.get_time(competitor_time, self._weather)
 				competitor_time += time
-			result.append({'competitor_name': competitor.name,
-								 'competitor_time': competitor_time})
+			result[competitor.name] = competitor_time
 		return(result)
 		
 	def _print_result(self, result):
 		if result:
-			for competitor in result:
-				print("Car <%s> result: %f" % (competitor['competitor_name'],
-										   competitor['competitor_time']))
+			self._notification_manager.notify(result)
 		else: print('None competitors!')
 
 

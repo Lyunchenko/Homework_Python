@@ -1,6 +1,7 @@
+import notification
 
 
-class Car:
+class Car(notification.Observer):
 	"""Автомобиль участвующий в гонке"""
 
 	_car_specs = {

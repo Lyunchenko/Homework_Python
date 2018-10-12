@@ -1,22 +1,13 @@
 import syslog
 import json
-from abc import abstractmethod
 import telegram
 import dbModule
-
-class CallbackMessage:
-
-    def __init__(self, ch, method, properties, body):
-        self.send_message(body)
-
-    @abstractmethod
-    def send_message(self, body):
-        pass
+import main
 
 
-class CallbackSMS(CallbackMessage):
+class CallbackSMS(main.Callback):
 
-    def send_message(self, body):
+    def callback(self, ch, method, properties, body):
 
         smsDict = json.loads(body)
 
@@ -49,9 +40,9 @@ class CallbackSMS(CallbackMessage):
                 connection.close()
 
 
-class CallbackTelegram(CallbackMessage):
+class CallbackTelegram(main.Callback):
 
-    def send_message(self, body):
+    def callback(self, ch, method, properties, body):
         try:
             # Telegram Bot
             pp = telegram.utils.request.Request(proxy_url='socks5://0.0.0.0:9999', urllib3_proxy_kwargs={
@@ -65,9 +56,9 @@ class CallbackTelegram(CallbackMessage):
             syslog.syslog("Error while sending telegram: %s" % (exc))
 
 
-class CallbackMail(CallbackMessage):
+class CallbackMail(main.Callback):
 
-    def send_message(self, body):
+    def callback(self, ch, method, properties, body):
         import smtplib
         from email.mime.text import MIMEText
         from email.mime.multipart import MIMEMultipart

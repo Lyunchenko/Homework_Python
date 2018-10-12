@@ -3,9 +3,17 @@ import sys
 import syslog
 import time
 from threading import Thread
+from abc import abstractmethod
 import callback_message as msg
 import callback_db as db
 
+
+class Callback:
+
+    @abstractmethod
+    def callback(self, ch, method, properties, body):
+        pass
+        
 
 class StartConsume:
 
@@ -22,7 +30,7 @@ class StartConsume:
         self.queue = queue
         
     def start_consume(self):
-        callback = self.instruction[self.queue]['callback']
+        callback = self.instruction[self.queue]['callback']().callback
         no_ack = self.instruction[self.queue]['no_ack']
         arguments = self.instruction[self.queue]['arguments']
 

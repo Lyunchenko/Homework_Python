@@ -1,13 +1,14 @@
 import unittest
 import gcd
 
+
 class TestGCD(unittest.TestCase):
 
     def test_gsd_in_param(self):
         self.assertEqual(gcd.gcd(0, 7), 7)
         self.assertEqual(gcd.gcd(7, 0), 7)
         self.assertEqual(gcd.gcd(7, 7), 7)
-        self.assertEqual(gcd.gcd(1, 1), 1)
+        self.assertEqual(gcd.gcd(1, 8), 1)
         self.assertEqual(gcd.gcd(4, 6), 2)
         self.assertEqual(gcd.gcd(10, 15), 5)
         self.assertEqual(gcd.gcd(15, 10), 5)
@@ -27,10 +28,9 @@ class TestGCD(unittest.TestCase):
                     result = result/int(result)
                     self.assertEqual(result, 1)
 
+
 if __name__ == '__main__':
     unittest.main()
-
-
 
 
 '''

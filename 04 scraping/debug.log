@@ -1,0 +1,2 @@
+[1108/082516.404:ERROR:process_reader_win.cc(123)] NtOpenThread: {Отказ доступа} Процесс запросил доступ к объекту, однако права доступа не предоставлены. (0xc0000022)
+[1108/082516.451:ERROR:exception_snapshot_win.cc(88)] thread ID 9516 not found in process
